@@ -1,3 +1,4 @@
 .DS_Store
 k8sosquery-values.yaml
 kubequery-values.yaml
+kubeconfig/config.yaml
