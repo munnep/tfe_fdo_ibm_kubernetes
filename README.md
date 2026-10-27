@@ -2,8 +2,6 @@
 
 This repository provides Terraform configurations to provision the IBM Cloud infrastructure prerequisites and deploy a highly available, active-active Terraform Enterprise (TFE) instance (Flexible Deployment Options - FDO) on an IBM Kubernetes Service (IKS) cluster. 
 
-In this active-active architecture, state and assets are stored in external database and object storage systems to ensure full high-availability across the environment.
-
 ---
 
 ## Architecture Overview
