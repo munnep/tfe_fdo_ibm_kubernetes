@@ -1,0 +1,145 @@
+replicaCount: ${replica_count}
+image:
+  repository: ${registry_images_url}
+  name: ${ tfe_beta_release ? "terraform-enterprise" : "hashicorp/terraform-enterprise" }
+  tag: ${tfe_release}
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    memory: "2000Mi"
+    cpu: "2"
+  limits:
+    memory: "4000Mi"
+    cpu: "2"
+
+service:
+  type: ClusterIP
+  annotations:
+    # Traefik talks HTTPS to the TFE pod (self-signed certificate) and does not verify it
+    traefik.ingress.kubernetes.io/service.serversscheme: https
+    traefik.ingress.kubernetes.io/service.serverstransport: ${servers_transport}
+
+# IBM managed ingress (Traefik). TLS is terminated with the IBM wildcard certificate.
+ingress:
+  enabled: true
+  className: ${ingress_class}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+  hosts:
+    - host: ${fqdn}
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: terraform-enterprise
+          portNumber: 443
+    - host: admin-${fqdn}
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: terraform-enterprise
+          portNumber: 8446
+  tls:
+    - secretName: ${ingress_tls_secret}
+      hosts:
+        - ${fqdn}
+        - admin-${fqdn}
+
+tfe:
+  metrics:
+    enable: true
+    httpPort: 9090
+    httpsPort: 9091
+  readinessProbePath: "/api/v1/health/readiness?timeout=8"
+  readinessProbeTimeoutSeconds: 8
+  readinessProbePeriodSeconds: 8
+  readinessProbeFailureThreshold: 8
+
+agentWorkerPodTemplate:
+  metadata:
+    labels:
+      app: tfe-agent
+      version: default
+  spec:
+    containers:
+    - image: docker.io/patrickmunne3/custom-agent:v1.42
+      # securityContext:
+      #   allowPrivilegeEscalation: false
+      #   capabilities:
+      #     drop:
+      #     - ALL
+      #   seccompProfile:
+      #     type: RuntimeDefault
+      # resources:
+      #   requests:
+      #     memory: "512Mi"
+      #     cpu: "500m"
+      #   limits:
+      #     memory: "1024Mi"
+      #     cpu: "2"
+      # Use the full Docker Hub path for minikube compatibility
+      # image: docker.io/hashicorp/tfc-agent:latest
+      # image: docker.io/patrickmunne3/custom-agent:latest
+
+
+env:  
+  variables:
+    TFE_USE_SUPERVISORD: true
+    # TFE_RUN_PIPELINE_KUBERNETES_NAMESPACE: terraform-enterprise
+    TFE_CAPACITY_CONCURRENCY: 6
+    # TFE_CAPACITY_MEMORY: 1024
+    TFE_CAPACITY_CPU: 2
+    TFE_CAPACITY_MEMORY: 1024
+    TFE_HOSTNAME: ${fqdn}
+    TFE_OPERATIONAL_MODE: active-active
+
+    TFE_DATABASE_HOST: ${pg_address}
+    TFE_DATABASE_NAME: ${pg_dbname}
+    TFE_DATABASE_USER: ${pg_user}
+    TFE_DATABASE_PARAMETERS: sslmode=require
+
+    # TFE_EXPLORER_DATABASE_USER: ${pg_user}
+    # TFE_EXPLORER_DATABASE_PASSWORD: ${pg_password}
+    # TFE_EXPLORER_DATABASE_HOST: ${pg_address}
+    # TFE_EXPLORER_DATABASE_NAME: "tfe_explorer"
+    # TFE_EXPLORER_DATABASE_PARAMETERS: sslmode=disable
+
+
+    TFE_OBJECT_STORAGE_TYPE: s3
+    TFE_OBJECT_STORAGE_S3_BUCKET: ${s3_bucket}
+    TFE_OBJECT_STORAGE_S3_REGION: ${s3_region}
+    TFE_OBJECT_STORAGE_S3_ACCESS_KEY_ID: ${s3_bucket_key}
+    TFE_OBJECT_STORAGE_S3_SECRET_ACCESS_KEY: ${s3_bucket_secret}
+    TFE_OBJECT_STORAGE_S3_ENDPOINT: ${s3_endpoint}
+    TFE_OBJECT_STORAGE_S3_USE_INSTANCE_PROFILE: false
+    TFE_ATLAS_REGISTRY_MONOREPO_TOGGLE_ENABLED: 1
+
+    # TFE_RUN_PIPELINE_IMAGE: docker.io/hashicorp/tfc-agent:latest
+
+    TFE_REDIS_HOST: ${redis_host}:${redis_port}
+    TFE_REDIS_USER: "${redis_user}"
+    TFE_REDIS_USE_AUTH: ${redis_use_auth}
+    TFE_REDIS_USE_TLS: ${redis_use_tls}
+    TFE_IACT_SUBNETS: "0.0.0.0/0"
+    TFE_REDIS_CA_CERT_PATH: "/etc/ssl/certs/custom_ca_certs.pem"
+
+
+  secrets:
+    TFE_DATABASE_PASSWORD: ${pg_password}
+    TFE_REDIS_PASSWORD: ${redis_password}
+    TFE_ENCRYPTION_PASSWORD:  ${enc_password}
+    TFE_LICENSE: ${tfe_license}
+
+# tfe:
+#   readinessProbePath: "/api/v1/health/readiness?timeout=5"
+#   readinessProbeTimeoutSeconds: 9
+#   readinessProbePeriodSeconds: 19
+#   readinessProbeFailureThreshold: 9
+
+tls:
+  certData: ${cert_data}
+  keyData: ${key_data}
+  caCertData: ${ca_cert_data}
+
+# tlsRedis:
+#   caCertData:  ${redis_certificate_b64}
