@@ -41,115 +41,107 @@ resource "ibm_is_network_acl" "network_acl" {
   resource_group = local.resource_group_id
 
   rules {
-    name        = "allow-all-inbound"
-    action      = "allow"
-    direction   = "inbound"
-    source      = "0.0.0.0/0"
-    destination = "0.0.0.0/0"
-    tcp {
-      port_min        = 1
-      port_max        = 65535
-      source_port_min = 1
-      source_port_max = 65535
-    }
+    name            = "allow-all-inbound"
+    action          = "allow"
+    direction       = "inbound"
+    source          = "0.0.0.0/0"
+    destination     = "0.0.0.0/0"
+    protocol        = "tcp"
+    port_min        = 1
+    port_max        = 65535
+    source_port_min = 1
+    source_port_max = 65535
   }
 
   rules {
-    name        = "allow-all-outbound"
-    action      = "allow"
-    direction   = "outbound"
-    source      = "0.0.0.0/0"
-    destination = "0.0.0.0/0"
-    tcp {
-      port_min        = 1
-      port_max        = 65535
-      source_port_min = 1
-      source_port_max = 65535
-    }
+    name            = "allow-all-outbound"
+    action          = "allow"
+    direction       = "outbound"
+    source          = "0.0.0.0/0"
+    destination     = "0.0.0.0/0"
+    protocol        = "tcp"
+    port_min        = 1
+    port_max        = 65535
+    source_port_min = 1
+    source_port_max = 65535
   }
 
   rules {
-    name        = "allow-all-udp-inbound"
-    action      = "allow"
-    direction   = "inbound"
-    source      = "0.0.0.0/0"
-    destination = "0.0.0.0/0"
-    udp {
-      port_min        = 1
-      port_max        = 65535
-      source_port_min = 1
-      source_port_max = 65535
-    }
+    name            = "allow-all-udp-inbound"
+    action          = "allow"
+    direction       = "inbound"
+    source          = "0.0.0.0/0"
+    destination     = "0.0.0.0/0"
+    protocol        = "udp"
+    port_min        = 1
+    port_max        = 65535
+    source_port_min = 1
+    source_port_max = 65535
   }
 
   rules {
-    name        = "allow-all-udp-outbound"
-    action      = "allow"
-    direction   = "outbound"
-    source      = "0.0.0.0/0"
-    destination = "0.0.0.0/0"
-    udp {
-      port_min        = 1
-      port_max        = 65535
-      source_port_min = 1
-      source_port_max = 65535
-    }
+    name            = "allow-all-udp-outbound"
+    action          = "allow"
+    direction       = "outbound"
+    source          = "0.0.0.0/0"
+    destination     = "0.0.0.0/0"
+    protocol        = "udp"
+    port_min        = 1
+    port_max        = 65535
+    source_port_min = 1
+    source_port_max = 65535
   }
 
   rules {
-    name        = "allow-postgres-outbound-to-vpe"
-    action      = "allow"
-    direction   = "outbound"
-    source      = local.subnet_cidr
-    destination = local.subnet_cidr
-    tcp {
-      source_port_min = 1
-      source_port_max = 65535
-      port_min        = local.postgres_port
-      port_max        = local.postgres_port
-    }
+    name            = "allow-postgres-outbound-to-vpe"
+    action          = "allow"
+    direction       = "outbound"
+    source          = local.subnet_cidr
+    destination     = local.subnet_cidr
+    protocol        = "tcp"
+    source_port_min = 1
+    source_port_max = 65535
+    port_min        = local.postgres_port
+    port_max        = local.postgres_port
   }
 
   rules {
-    name        = "allow-postgres-inbound-from-vpe"
-    action      = "allow"
-    direction   = "inbound"
-    source      = local.subnet_cidr
-    destination = local.subnet_cidr
-    tcp {
-      source_port_min = local.postgres_port
-      source_port_max = local.postgres_port
-      port_min        = 1
-      port_max        = 65535
-    }
+    name            = "allow-postgres-inbound-from-vpe"
+    action          = "allow"
+    direction       = "inbound"
+    source          = local.subnet_cidr
+    destination     = local.subnet_cidr
+    protocol        = "tcp"
+    source_port_min = local.postgres_port
+    source_port_max = local.postgres_port
+    port_min        = 1
+    port_max        = 65535
   }
 
   rules {
-    name        = "allow-redis-outbound-to-vpe"
-    action      = "allow"
-    direction   = "outbound"
-    source      = local.subnet_cidr
-    destination = local.subnet_cidr
-    tcp {
-      source_port_min = 1
-      source_port_max = 65535
-      port_min        = local.redis_port
-      port_max        = local.redis_port
-    }
+    name            = "allow-redis-outbound-to-vpe"
+    action          = "allow"
+    direction       = "outbound"
+    source          = local.subnet_cidr
+    destination     = local.subnet_cidr
+    protocol        = "tcp"
+    source_port_min = 1
+    source_port_max = 65535
+    port_min        = local.redis_port
+    port_max        = local.redis_port
   }
 
   rules {
-    name        = "allow-redis-inbound-from-vpe"
-    action      = "allow"
-    direction   = "inbound"
-    source      = local.subnet_cidr
-    destination = local.subnet_cidr
-    tcp {
-      source_port_min = local.redis_port
-      source_port_max = local.redis_port
-      port_min        = 1
-      port_max        = 65535
-    }
+    name            = "allow-redis-inbound-from-vpe"
+    action          = "allow"
+    direction       = "inbound"
+    source          = local.subnet_cidr
+    destination     = local.subnet_cidr
+    protocol        = "tcp"
+    source_port_min = local.redis_port
+    source_port_max = local.redis_port
+    port_min        = 1
+    port_max        = 65535
   }
 }
 
@@ -187,22 +179,18 @@ resource "ibm_is_security_group_rule" "vpe_postgres_inbound" {
   group     = ibm_is_security_group.vpe.id
   direction = "inbound"
   remote    = "0.0.0.0/0"
-
-  tcp {
-    port_min = local.postgres_port
-    port_max = local.postgres_port
-  }
+  protocol  = "tcp"
+  port_min  = local.postgres_port
+  port_max  = local.postgres_port
 }
 
 resource "ibm_is_security_group_rule" "vpe_redis_inbound" {
   group     = ibm_is_security_group.vpe.id
   direction = "inbound"
   remote    = "0.0.0.0/0"
-
-  tcp {
-    port_min = local.redis_port
-    port_max = local.redis_port
-  }
+  protocol  = "tcp"
+  port_min  = local.redis_port
+  port_max  = local.redis_port
 }
 
 resource "ibm_is_security_group_rule" "vpe_outbound" {
