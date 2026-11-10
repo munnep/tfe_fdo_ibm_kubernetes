@@ -1,10 +1,15 @@
 ########################################################################################################################
-# Outputs (only those consumed by the tfe/ configuration)
+# Outputs (only those consumed by the tfe_kubernetes/ and tfe_openshift/ configurations)
 ########################################################################################################################
 
 # cluster information
 output "kubeconfig_context" {
-  value = "${var.environment_prefix}-iks"
+  value = local.cluster_name
+}
+
+output "cluster_type" {
+  description = "\"openshift\" or \"kubernetes\". Use ../tfe_openshift for openshift and ../tfe_kubernetes for kubernetes."
+  value       = local.cluster_type
 }
 
 # COS (Cloud Object Storage)
@@ -80,8 +85,8 @@ output "redis_certificate_base64" {
   value       = nonsensitive(local.redis_certificate_b64)
 }
 
-# IKS Cluster
-output "iks_cluster_ingress_hostname" {
-  description = "Ingress subdomain of the IKS cluster."
-  value       = ibm_container_vpc_cluster.iks.ingress_hostname
+# Cluster
+output "cluster_ingress_hostname" {
+  description = "Ingress subdomain of the IKS / OpenShift cluster."
+  value       = ibm_container_vpc_cluster.cluster.ingress_hostname
 }

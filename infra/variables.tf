@@ -72,12 +72,29 @@ variable "redis_version" {
 }
 
 ########################################################################################################################
-# IKS Cluster
+# Kubernetes / OpenShift Cluster
 ########################################################################################################################
+
+variable "openshift" {
+  type        = bool
+  description = "true creates a Red Hat OpenShift on IBM Cloud (ROKS) cluster, false creates a plain IBM Kubernetes Service (IKS) cluster. Deploy TFE with ../tfe_openshift when true and with ../tfe_kubernetes when false."
+  default     = false
+}
+
+variable "openshift_version" {
+  type        = string
+  description = "OpenShift version, only used when openshift = true. Must end in '_openshift' (see 'ibmcloud oc versions')."
+  default     = "4.19_openshift"
+
+  validation {
+    condition     = endswith(var.openshift_version, "_openshift")
+    error_message = "openshift_version must end in '_openshift', for example 4.19_openshift."
+  }
+}
 
 variable "kube_version" {
   type        = string
-  description = "Kubernetes version for the IKS cluster. Use 'default' to get the current IBM Cloud default."
+  description = "Kubernetes version for the IKS cluster, only used when openshift = false. Use 'default' to get the current IBM Cloud default."
   default     = "default"
 }
 
@@ -89,7 +106,7 @@ variable "worker_machine_type" {
 
 variable "workers_per_zone" {
   type        = number
-  description = "Number of worker nodes per zone in the default worker pool."
+  description = "Number of worker nodes per zone in the default worker pool. OpenShift requires at least 2, so a lower value is raised to 2 when openshift = true."
   default     = 1
 }
 
@@ -101,6 +118,6 @@ variable "worker_labels" {
 
 variable "disable_outbound_traffic_protection" {
   type        = bool
-  description = "Allow outbound connections from IKS worker nodes to public internet destinations."
+  description = "Allow outbound connections from cluster worker nodes to public internet destinations."
   default     = true
 }

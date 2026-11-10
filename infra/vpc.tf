@@ -161,7 +161,7 @@ resource "ibm_is_subnet" "subnet" {
 ########################################################################################################################
 # Additional Network Resources - Virtual Private Endpoints (VPE) & Security Groups
 # 
-# Enables private connectivity from IKS cluster pods/workers to IBM Cloud Databases (PostgreSQL and Redis)
+# Enables private connectivity from cluster (IKS/OpenShift) pods/workers to IBM Cloud Databases (PostgreSQL and Redis)
 ########################################################################################################################
 
 ########################################################################################################################

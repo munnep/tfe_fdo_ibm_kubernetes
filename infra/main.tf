@@ -8,5 +8,5 @@
 #   redis.tf              - Redis (IBM Cloud Databases)
 #   vpc.tf                - VPC, subnets, public gateways, network ACL
 #   additional_network.tf - VPE gateways and security groups
-#   iks.tf                - IKS VPC cluster and agent worker pool
+#   cluster.tf            - IKS or OpenShift VPC cluster (var.openshift) and agent worker pool
 ########################################################################################################################
